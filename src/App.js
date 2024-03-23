@@ -1,65 +1,52 @@
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
-import home from './images/home.svg'
-import analyze from './images/analyze.svg';
-import settings from './images/settings.svg';
-import team from './images/team.svg';
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 import HomeComponent from './pages/HomeComponent';
+import Sidebar from './pages/Sidebar';
+import Login from './pages/Login';
 
-function App() {
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [userRole, setUserRole] = useState('');
+
+  const handleLogin = (username) => {
+    setIsLoggedIn(true);
+    setUsername(username);
+    setUserRole('admin'); // Assuming user role for demonstration purposes
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUsername('');
+    setUserRole('');
+  };
+
   return (
-    <div className="App">
+    <div className="min-h-screen flex">
       <Router>
-        <div className='container'>
-          <div className="sidebar">
-            <div className="sidebar-icon">
-              <Link to="/home">
-                <img
-                  src={home}
-                  alt="Icon 1"
-                  className="sidebar-img"
-                />
-              </Link>
-            </div>
-            <div className="sidebar-icon">
-              <Link to="/analyze">
-                <img
-                  src={analyze}
-                  alt="Icon 2"
-                  className="sidebar-img"
-                />
-              </Link>
-            </div>
-            <div className="sidebar-icon">
-              <Link to="/settings">
-                <img
-                  src={settings}
-                  alt="Icon 3"
-                  className="sidebar-img"
-                />
-              </Link>
-            </div>
-            <div className="sidebar-icon">
-              <Link to="/team">
-                <img
-                  src={team}
-                  alt="Icon 4"
-                  className="sidebar-img"
-                />
-              </Link>
-            </div>
-          </div>
-
-          <div className='main-content'>
-            <Routes>
-              <Route path="/home" element={<HomeComponent />} />
-            </Routes>
-          </div>
+        <div className="w-1/12 bg-gray-900">
+          <Sidebar isLoggedIn={isLoggedIn} userRole={userRole} onLogout={handleLogout} />
+        </div>
+        <div className="w-11/12">
+          <Routes>
+            <Route
+              exact
+              path="/home"
+              element={isLoggedIn ? <HomeComponent /> : <Navigate to="/login" />}
+            />
+            <Route
+              exact
+              path="/login"
+              element={<Login isLoggedIn={isLoggedIn} onLogin={handleLogin} />}
+            />
+            {/* Add other routes here */}
+          </Routes>
         </div>
       </Router>
     </div>
   );
-}
+};
 
 export default App;
